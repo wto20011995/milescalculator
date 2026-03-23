@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <title>里數計算機</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            apple: {
+              bg: '#f5f5f7',
+              card: '#ffffff',
+              text: '#1d1d1f',
+              sub: '#3c3c43',
+              sub60: 'rgba(60,60,67,0.6)',
+              blue: '#0071e3',
+              border: '#d2d2d7',
+              input: '#f5f5f7'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system','BlinkMacSystemFont','"SF Pro Text"','"SF Pro Display"','"Helvetica Neue"','Helvetica','Arial','sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body{
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button{
+      -webkit-appearance:none;
+      margin:0;
+    }
+    .transition-apple{
+      transition:all 0.35s cubic-bezier(0.25,1,0.5,1);
+    }
+  </style>
+</head>
+<body class="bg-apple-bg text-apple-text font-sans min-h-screen selection:bg-apple-blue selection:text-white">
+
+  <!-- iOS 風格頂部 (小螢幕顯示, lg 以上隱藏) -->
+  <header class="lg:hidden pt-4 pb-3 px-4 safe-top bg-apple-bg">
+    <div class="text-[34px] font-bold tracking-tight text-apple-text leading-tight">
+      里數計算機
+    </div>
+    <div class="mt-1 text-[15px] text-apple-sub60 leading-snug">
+      規劃兌換目標，精準計算你的簽賬策略。
+    </div>
+  </header>
+
+  <!-- 桌面版標題 (lg 以上顯示) -->
+  <header class="hidden lg:block bg-apple-bg">
+    <div class="max-w-7xl mx-auto px-8 pt-12 pb-6">
+      <h1 class="text-5xl font-bold tracking-tight text-apple-text">里數計算機</h1>
+      <p class="mt-3 text-xl text-apple-sub60 font-medium">
+        規劃兌換目標，精準計算你的簽賬策略。
+      </p>
+    </div>
+  </header>
+
+  <!-- 主內容 -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 lg:pb-16">
+    <!-- iOS 手機版：上下堆疊；桌面版：左右雙欄 -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 mt-4 lg:mt-0">
+      
+      <!-- 左欄：目標 + 輸入 (lg: 5 格) -->
+      <div class="lg:col-span-5 space-y-6 lg:space-y-8">
+        
+        <!-- 1: 目標 (手機版為完整卡片，桌面版沿用) -->
+        <section
+          class="bg-apple-card rounded-[28px] lg:rounded-3xl px-4 py-5 sm:px-5 sm:py-6 lg:px-8 lg:py-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] lg:shadow-[0_2px_20px_rgba(0,0,0,0.04)] transition-apple">
+          <h2 class="text-[22px] lg:text-2xl font-semibold tracking-tight mb-4 lg:mb-5">
+            選擇目標
+          </h2>
+          <div class="space-y-2.5 lg:space-y-3">
+            <button type="button"
+              class="target-btn w-full text-left px-4 py-3.5 lg:px-5 lg:py-4 rounded-2xl border border-apple-border bg-white transition-apple active:scale-[0.97]"
+              data-target="32000">
+              <div class="text-[17px] font-semibold text-apple-text tracking-tight">
+                香港至日本單程商務機票
+              </div>
+              <div class="text-[13px] text-apple-sub60 mt-0.5">32,000 里</div>
+            </button>
+
+            <button type="button"
+              class="target-btn w-full text-left px-4 py-3.5 lg:px-5 lg:py-4 rounded-2xl border border-apple-border bg-white transition-apple active:scale-[0.97]"
+              data-target="64000">
+              <div class="text-[17px] font-semibold text-apple-text tracking-tight">
+                香港至日本來回商務機票
+              </div>
+              <div class="text-[13px] text-apple-sub60 mt-0.5">64,000 里</div>
+            </button>
+
+            <button type="button"
+              class="target-btn w-full text-left px-4 py-3.5 lg:px-5 lg:py-4 rounded-2xl border border-apple-border bg-white transition-apple active:scale-[0.97]"
+              data-target="15000">
+              <div class="text-[17px] font-semibold text-apple-text tracking-tight">
+                單程經濟客位升豪華經濟
+              </div>
+              <div class="text-[13px] text-apple-sub60 mt-0.5">15,000 里</div>
+            </button>
+          </div>
+          <p class="text-[12px] text-apple-sub60 mt-3 text-center font-medium">
+            可多選，系統會自動合併目標里數。
+          </p>
+        </section>
+
+        <!-- 2: 輸入區 (iOS 風格表單卡片) -->
+        <section
+          class="bg-apple-card rounded-[28px] lg:rounded-3xl px-4 py-5 sm:px-5 sm:py-6 lg:px-8 lg:py-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] lg:shadow-[0_2px_20px_rgba(0,0,0,0.04)] transition-apple">
+          <h2 class="text-[22px] lg:text-2xl font-semibold tracking-tight mb-5 lg:mb-6">
+            現有里數及積分
+          </h2>
+
+          <div class="space-y-4.5 lg:space-y-5">
+            <div>
+              <label class="block text-[13px] font-semibold text-apple-sub60 uppercase tracking-wide mb-1.5">
+                現有里數
+              </label>
+              <input id="currentMiles" type="number" inputmode="numeric" min="0" placeholder="0"
+                class="w-full bg-apple-input rounded-[16px] px-4 py-3.5 text-[17px] text-apple-text font-medium border border-transparent focus:bg-white focus:border-apple-blue focus:ring-4 focus:ring-apple-blue/20 outline-none transition-apple" />
+            </div>
+
+            <div>
+              <label class="block text-[13px] font-semibold text-apple-sub60 uppercase tracking-wide mb-1">
+                HSBC 獎賞錢
+              </label>
+              <p class="text-[12px] text-apple-sub60 mb-1.5">1 獎賞錢 = 10 里</p>
+              <input id="hsbcRewardCash" type="number" inputmode="decimal" min="0" step="0.1" placeholder="0"
+                class="w-full bg-apple-input rounded-[16px] px-4 py-3.5 text-[17px] text-apple-text font-medium border border-transparent focus:bg-white focus:border-apple-blue focus:ring-4 focus:ring-apple-blue/20 outline-none transition-apple" />
+            </div>
+
+            <div>
+              <label class="block text-[13px] font-semibold text-apple-sub60 uppercase tracking-wide mb-1">
+                AE Points
+              </label>
+              <p class="text-[12px] text-apple-sub60 mb-1.5">
+                18 分 = 1 里 (最低 18,000，其後每 9,000 遞增)
+              </p>
+              <input id="aePoints" type="number" inputmode="numeric" min="0" placeholder="0"
+                class="w-full bg-apple-input rounded-[16px] px-4 py-3.5 text-[17px] text-apple-text font-medium border border-transparent focus:bg-white focus:border-apple-blue focus:ring-4 focus:ring-apple-blue/20 outline-none transition-apple" />
+            </div>
+
+            <div>
+              <label class="block text-[13px] font-semibold text-apple-sub60 uppercase tracking-wide mb-1">
+                DBS$
+              </label>
+              <p class="text-[12px] text-apple-sub60 mb-1.5">
+                48 DBS$ = 1,000 里 (需為 1,000 里倍數)
+              </p>
+              <input id="dbsDollar" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0"
+                class="w-full bg-apple-input rounded-[16px] px-4 py-3.5 text-[17px] text-apple-text font-medium border border-transparent focus:bg-white focus:border-apple-blue focus:ring-4 focus:ring-apple-blue/20 outline-none transition-apple" />
+            </div>
+          </div>
+
+          <div class="mt-6 lg:mt-8 pt-4 lg:pt-6 border-t border-apple-bg flex justify-end">
+            <button id="clearBtn" type="button"
+              class="inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#e5e5ea] text-[15px] font-semibold text-apple-text active:scale-95 transition-apple">
+              清除全部資料
+            </button>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- 右欄：結果 + 各卡簽賬 (lg: 7 格) -->
+      <div class="lg:col-span-7 space-y-6 lg:space-y-8 mt-2 lg:mt-0">
+        
+        <!-- 3: 結果卡片 -->
+        <section
+          class="bg-apple-card rounded-[28px] lg:rounded-3xl px-4 py-5 sm:px-5 sm:py-6 lg:px-10 lg:py-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] lg:shadow-[0_2px_20px_rgba(0,0,0,0.04)] transition-apple">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8 divide-y sm:divide-y-0 sm:divide-x divide-apple-border">
+            <div class="pt-2 sm:pt-0 sm:pr-6 flex flex-col justify-center">
+              <div class="text-[13px] font-semibold text-apple-sub60 mb-1 tracking-wide">
+                目標總里數
+              </div>
+              <div id="targetMiles" class="text-3xl lg:text-4xl font-bold tracking-tight text-apple-text">
+                0
+              </div>
+            </div>
+            <div class="pt-4 sm:pt-0 sm:px-6 flex flex-col justify-center">
+              <div class="text-[13px] font-semibold text-apple-sub60 mb-1 tracking-wide">
+                預計現有總里數
+              </div>
+              <div id="totalMiles" class="text-3xl lg:text-4xl font-bold tracking-tight text-apple-text">
+                0
+              </div>
+            </div>
+            <div class="pt-4 sm:pt-0 sm:pl-6 flex flex-col justify-center">
+              <div class="text-[13px] font-semibold text-apple-sub60 mb-1 tracking-wide">
+                還需要的里數
+              </div>
+              <div id="remainingMiles" class="text-3xl lg:text-4xl font-bold tracking-tight text-apple-blue">
+                0
+              </div>
+            </div>
+          </div>
+
+          <div id="warningsWrap" class="hidden mt-6 rounded-2xl bg-[#fff2f2] p-4">
+            <div class="text-[12px] font-semibold text-[#ff3b30] uppercase tracking-wide mb-1.5">
+              未達兌換門檻
+            </div>
+            <div id="warnings" class="space-y-1 text-[14px] font-medium text-[#ff3b30] tracking-tight"></div>
+          </div>
+        </section>
+
+        <!-- 4: 各卡簽賬 (保持桌面版邏輯) -->
+        <section
+          class="bg-apple-card rounded-[28px] lg:rounded-3xl px-4 py-5 sm:px-5 sm:py-6 lg:px-10 lg:py-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] lg:shadow-[0_2px_20px_rgba(0,0,0,0.04)] transition-apple">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-5 lg:mb-6 gap-3">
+            <h2 class="text-[20px] lg:text-2xl font-semibold tracking-tight text-apple-text">
+              簽賬策略估算
+            </h2>
+            <div id="statusBadge"
+                 class="self-start sm:self-auto text-[12px] font-semibold px-3 py-1.5 rounded-full bg-apple-bg text-apple-sub60">
+              請先選擇目標
+            </div>
+          </div>
+
+          <p id="spendNote"
+             class="text-[14px] lg:text-[15px] text-apple-sub60 font-medium mb-5 lg:mb-7 leading-relaxed">
+            系統會根據「還需要的里數」，按單一策略估算以下各信用卡所需合資格簽賬。「首 HK$10k」項目設有上限，超出的部分會自動撥入「其後」計算。
+          </p>
+
+          <div class="space-y-5 lg:space-y-6">
+            <!-- HSBC Red -->
+            <div class="bg-apple-bg rounded-[22px] p-4 lg:p-5">
+              <h3 class="text-[18px] font-semibold tracking-tight text-apple-text mb-3">
+                HSBC Red 信用卡
+              </h3>
+              <div class="space-y-3.5 divide-y divide-apple-border/60">
+                <div class="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <div class="text-[15px] font-semibold text-apple-text">
+                      指定商戶簽賬
+                    </div>
+                    <div class="text-[13px] text-apple-sub60 mt-0.5">
+                      8%︱HK$1 = 0.08 獎賞錢 = 0.8 里 (約 HK$1.25/里)
+                    </div>
+                  </div>
+                  <div id="hsbcRedDesignated"
+                       class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                    —
+                  </div>
+                </div>
+
+                <div class="pt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <div class="text-[15px] font-semibold text-apple-text">
+                      首 HK$10,000 網上購物
+                    </div>
+                    <div class="text-[13px] text-apple-sub60 mt-0.5">
+                      4%︱HK$1 = 0.04 獎賞錢 = 0.4 里 (約 HK$2.5/里)
+                    </div>
+                  </div>
+                  <div id="hsbcRedTier1"
+                       class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                    —
+                  </div>
+                </div>
+
+                <div class="pt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <div class="text-[15px] font-semibold text-apple-text">
+                      其後網上購物
+                    </div>
+                    <div class="text-[13px] text-apple-sub60 mt-0.5">
+                      0.4%︱HK$1 = 0.004 獎賞錢 = 0.04 里 (約 HK$25/里)
+                    </div>
+                  </div>
+                  <div id="hsbcRedTier2"
+                       class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                    —
+                  </div>
+                </div>
+
+                <div class="pt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <div class="text-[15px] font-semibold text-apple-text">
+                      本地及其他簽賬
+                    </div>
+                    <div class="text-[13px] text-apple-sub60 mt-0.5">
+                      0.4%︱HK$1 = 0.004 獎賞錢 = 0.04 里 (約 HK$25/里)
+                    </div>
+                  </div>
+                  <div id="hsbcRedLocal"
+                       class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                    —
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- HSBC easy -->
+            <div class="bg-apple-bg rounded-[22px] p-4 lg:p-5">
+              <h3 class="text-[18px] font-semibold tracking-tight text-apple-text mb-3">
+                HSBC easy 信用卡
+              </h3>
+              <div class="space-y-3.5 divide-y divide-apple-border/60">
+                <div class="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <div class="text-[15px] font-semibold text-apple-text">
+                      海外 / 中國內地 / 澳門簽賬
+                    </div>
+                    <div class="text-[13px] text-apple-sub60 mt-0.5">
+                      2.4%︱HK$1 = 0.024 獎賞錢 = 0.24 里 (約 HK$4.17/里)
+                    </div>
+                  </div>
+                  <div id="hsbcEasySpend"
+                       class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                    —
+                  </div>
+                </div>
+                <div class="pt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <div class="text-[15px] font-semibold text-apple-text">
+                      本地及其他簽賬
+                    </div>
+                    <div class="text-[13px] text-apple-sub60 mt-0.5">
+                      0.4%︱HK$1 = 0.004 獎賞錢 = 0.04 里 (約 HK$25/里)
+                    </div>
+                  </div>
+                  <div id="hsbcEasyLocal"
+                       class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                    —
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- AE Explorer -->
+            <div class="bg-apple-bg rounded-[22px] p-4 lg:p-5">
+              <h3 class="text-[18px] font-semibold tracking-tight text-apple-text mb-3">
+                美國運通 Explorer 信用卡
+              </h3>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-3 lg:gap-y-0 divide-y lg:divide-y-0 lg:divide-x divide-apple-border/60">
+                <div class="space-y-3 pt-1 lg:pt-0 lg:pr-4">
+                  <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-1.5 xl:gap-4">
+                    <div>
+                      <div class="text-[15px] font-semibold text-apple-text">指定網上商戶</div>
+                      <div class="text-[13px] text-apple-sub60 mt-0.5">
+                        HK$1 = 5 AE Points ≈ 0.28 里 (HK$3.6/里)
+                      </div>
+                    </div>
+                    <div id="aeOnlineSpend"
+                         class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                      —
+                    </div>
+                  </div>
+
+                  <div class="pt-3 border-t border-apple-border/60 lg:border-t-0">
+                    <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-1.5 xl:gap-4">
+                      <div>
+                        <div class="text-[15px] font-semibold text-apple-text">本地合資格簽賬</div>
+                        <div class="text-[13px] text-apple-sub60 mt-0.5">
+                          HK$1 = 3 AE Points ≈ 0.17 里 (HK$6/里)
+                        </div>
+                      </div>
+                      <div id="aeLocalSpend"
+                           class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                        —
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="space-y-3 pt-3 lg:pt-0 lg:pl-4">
+                  <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-1.5 xl:gap-4">
+                    <div>
+                      <div class="text-[15px] font-semibold text-apple-text">首 HK$10k 外幣及旅遊</div>
+                      <div class="text-[13px] text-apple-sub60 mt-0.5">
+                        HK$1 = 10.75 AE Points ≈ 0.60 里 (約 HK$1.67/里)
+                      </div>
+                    </div>
+                    <div id="aeTravelTier1"
+                         class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                      —
+                    </div>
+                  </div>
+
+                  <div class="pt-3 border-t border-apple-border/60">
+                    <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-1.5 xl:gap-4">
+                      <div>
+                        <div class="text-[15px] font-semibold text-apple-text">其後外幣及旅遊</div>
+                        <div class="text-[13px] text-apple-sub60 mt-0.5">
+                          HK$1 = 3.75 AE Points ≈ 0.21 里 (HK$4.8/里)
+                        </div>
+                      </div>
+                      <div id="aeTravelTier2"
+                           class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                        —
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DBS Black World -->
+            <div class="bg-apple-bg rounded-[22px] p-4 lg:p-5">
+              <h3 class="text-[18px] font-semibold tracking-tight text-apple-text mb-3">
+                DBS Black World Mastercard
+              </h3>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-3 lg:gap-y-0 divide-y lg:divide-y-0 lg:divide-x divide-apple-border/60">
+                <div class="pt-1 lg:pt-0 lg:pr-4 flex flex-col xl:flex-row xl:items-center justify-between gap-1.5 xl:gap-4">
+                  <div>
+                    <div class="text-[15px] font-semibold text-apple-text">本地零售簽賬</div>
+                    <div class="text-[13px] text-apple-sub60 mt-0.5">
+                      HK$1 ≈ 0.008 DBS$ ≈ 0.17 里 (HK$6/里)
+                    </div>
+                  </div>
+                  <div id="dbsLocalSpend"
+                       class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                    —
+                  </div>
+                </div>
+
+                <div class="pt-3 lg:pt-0 lg:pl-4 flex flex-col xl:flex-row xl:items-center justify-between gap-1.5 xl:gap-4">
+                  <div>
+                    <div class="text-[15px] font-semibold text-apple-text">海外零售簽賬</div>
+                    <div class="text-[13px] text-apple-sub60 mt-0.5">
+                      HK$1 = 0.012 DBS$ = 0.25 里 (HK$4/里)
+                    </div>
+                  </div>
+                  <div id="dbsOverseasSpend"
+                       class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                    —
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const targetBtns = document.querySelectorAll('.target-btn');
+    const inputs = document.querySelectorAll('input');
+
+    function num(v){return Number(v)||0;}
+    function formatNum(v){return Math.round(v).toLocaleString('en-US');}
+    function formatMoney(v){
+      return v===0?'HK$0':'HK$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    }
+    function setText(id,v){document.getElementById(id).textContent=v;}
+
+    function getSelectedTarget(){
+      let total=0;
+      targetBtns.forEach(btn=>{
+        if(btn.dataset.active==='true') total+=num(btn.dataset.target);
+      });
+      return total;
+    }
+
+    function calculateSpend(remaining,targetMiles){
+      const badge=document.getElementById('statusBadge');
+      const allIds=[
+        'hsbcRedDesignated','hsbcRedTier1','hsbcRedTier2','hsbcRedLocal',
+        'hsbcEasySpend','hsbcEasyLocal',
+        'aeOnlineSpend','aeLocalSpend','aeTravelTier1','aeTravelTier2',
+        'dbsLocalSpend','dbsOverseasSpend'
+      ];
+
+      if(targetMiles===0){
+        badge.textContent='請先選擇目標';
+        badge.className='self-start sm:self-auto text-[12px] font-semibold px-3 py-1.5 rounded-full bg-apple-bg text-apple-sub60';
+        allIds.forEach(id=>setText(id,'—'));
+        return;
+      }
+
+      if(remaining<=0){
+        badge.textContent='目標已達成';
+        badge.className='self-start sm:self-auto text-[12px] font-semibold px-3 py-1.5 rounded-full bg-[#e3f5eb] text-[#147a3e]';
+        allIds.forEach(id=>setText(id,'無須簽賬'));
+        return;
+      }
+
+      badge.textContent='計算中';
+      badge.className='self-start sm:self-auto text-[12px] font-semibold px-3 py-1.5 rounded-full bg-[#e8f2ff] text-apple-blue';
+
+      // HSBC Red 指定商戶 8%
+      setText('hsbcRedDesignated',formatMoney(remaining/0.8));
+
+      // HSBC Red 網購首10k + 其後
+      let redTier1=0, redTier2=0;
+      if(remaining<=4000){
+        redTier1=(remaining/10)/0.04;
+        redTier2=0;
+      }else{
+        redTier1=10000;
+        redTier2=((remaining-4000)/10)/0.004;
+      }
+      setText('hsbcRedTier1',formatMoney(redTier1));
+      setText('hsbcRedTier2',formatMoney(redTier2));
+
+      // HSBC Red 本地及其他 0.4%
+      setText('hsbcRedLocal',formatMoney(remaining/0.04));
+
+      // HSBC easy 海外 2.4% + 本地 0.4%
+      setText('hsbcEasySpend',formatMoney((remaining/10)/0.024));
+      setText('hsbcEasyLocal',formatMoney(remaining/0.04));
+
+      // AE Explorer
+      setText('aeOnlineSpend',formatMoney((remaining*18)/5));
+      setText('aeLocalSpend',formatMoney((remaining*18)/3));
+
+      let travelPointsNeeded=remaining*18;
+      let firstTierTravelPoints=10000*10.75;
+      let aeTravelT1=0, aeTravelT2=0;
+      if(travelPointsNeeded<=firstTierTravelPoints){
+        aeTravelT1=travelPointsNeeded/10.75;
+        aeTravelT2=0;
+      }else{
+        aeTravelT1=10000;
+        aeTravelT2=(travelPointsNeeded-firstTierTravelPoints)/3.75;
+      }
+      setText('aeTravelTier1',formatMoney(aeTravelT1));
+      setText('aeTravelTier2',formatMoney(aeTravelT2));
+
+      // DBS
+      setText('dbsLocalSpend',formatMoney(remaining*6));
+      setText('dbsOverseasSpend',formatMoney(remaining*4));
+    }
+
+    function calculate(){
+      const cMiles=num(document.getElementById('currentMiles').value);
+      const hsbcRC=num(document.getElementById('hsbcRewardCash').value);
+      const aePts=num(document.getElementById('aePoints').value);
+      const dbsD=num(document.getElementById('dbsDollar').value);
+
+      const hsbcMiles=hsbcRC*10;
+
+      let aeM=0, aeShortfall=0, aeNext=0;
+      if(aePts>0){
+        if(aePts<18000){
+          aeShortfall=18000-aePts; aeNext=1000;
+        }else{
+          const used=18000+Math.floor((aePts-18000)/9000)*9000;
+          aeM=used/18;
+          if(aePts-used>0){
+            aeShortfall=9000-(aePts-used); aeNext=500;
+          }
+        }
+      }
+
+      const dbsBlocks=Math.floor(dbsD/48);
+      const dbsM=dbsBlocks*1000;
+      const dbsRem=dbsD-dbsBlocks*48;
+      const dbsShortfall=dbsRem>0?48-dbsRem:0;
+
+      const totalMiles=cMiles+hsbcMiles+aeM+dbsM;
+      const targetMiles=getSelectedTarget();
+      const remainingMiles=Math.max(targetMiles-totalMiles,0);
+
+      setText('targetMiles',formatNum(targetMiles));
+      setText('totalMiles',formatNum(totalMiles));
+      setText('remainingMiles',formatNum(remainingMiles));
+
+      const remainingEl=document.getElementById('remainingMiles');
+      if(remainingMiles===0 && targetMiles>0){
+        remainingEl.classList.remove('text-apple-blue');
+        remainingEl.classList.add('text-[#147a3e]');
+      }else{
+        remainingEl.classList.remove('text-[#147a3e]');
+        remainingEl.classList.add('text-apple-blue');
+      }
+
+      const warningsWrap=document.getElementById('warningsWrap');
+      const warnings=document.getElementById('warnings');
+      warnings.innerHTML='';
+      let hasWarn=false;
+
+      if(aeShortfall>0){
+        hasWarn=true;
+        warnings.innerHTML+=`<div>• AE Points 尚欠 ${formatNum(aeShortfall)} 分可多換 ${formatNum(aeNext)} 里。</div>`;
+      }
+      if(dbsShortfall>0){
+        hasWarn=true;
+        warnings.innerHTML+=`<div>• DBS$ 尚欠 ${dbsShortfall.toLocaleString('en-US',{minimumFractionDigits:dbsShortfall%1?2:0,maximumFractionDigits:2})} 可多換 1,000 里。</div>`;
+      }
+      warningsWrap.classList.toggle('hidden',!hasWarn);
+
+      calculateSpend(remainingMiles,targetMiles);
+    }
+
+    // 目標按鈕 iOS 風格切換
+    targetBtns.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const isActive=btn.dataset.active==='true';
+        btn.dataset.active=!isActive;
+        if(!isActive){
+          btn.classList.replace('border-apple-border','border-apple-blue');
+          btn.classList.add('ring-1','ring-apple-blue','bg-[#f8fbff]');
+          btn.classList.remove('bg-white');
+        }else{
+          btn.classList.replace('border-apple-blue','border-apple-border');
+          btn.classList.remove('ring-1','ring-apple-blue','bg-[#f8fbff]');
+          btn.classList.add('bg-white');
+        }
+        calculate();
+      });
+    });
+
+    inputs.forEach(input=>input.addEventListener('input',calculate));
+
+    document.getElementById('clearBtn').addEventListener('click',()=>{
+      inputs.forEach(i=>i.value='');
+      targetBtns.forEach(btn=>{
+        btn.dataset.active='false';
+        btn.classList.replace('border-apple-blue','border-apple-border');
+        btn.classList.remove('ring-1','ring-apple-blue','bg-[#f8fbff]');
+        btn.classList.add('bg-white');
+      });
+      calculate();
+    });
+
+    // 首次載入時也測試一次計算 (確認桌面 / 手機都能輸入與計算)
+    calculate();
+  </script>
+</body>
+</html>
