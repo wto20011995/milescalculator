@@ -74,7 +74,7 @@
       <!-- 左欄：目標 + 輸入 (lg: 5 格) -->
       <div class="lg:col-span-5 space-y-6 lg:space-y-8">
         
-        <!-- 1: 目標 (手機版為完整卡片，桌面版沿用) -->
+        <!-- 1: 目標 -->
         <section
           class="bg-apple-card rounded-[28px] lg:rounded-3xl px-4 py-5 sm:px-5 sm:py-6 lg:px-8 lg:py-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] lg:shadow-[0_2px_20px_rgba(0,0,0,0.04)] transition-apple">
           <h2 class="text-[22px] lg:text-2xl font-semibold tracking-tight mb-4 lg:mb-5">
@@ -113,7 +113,7 @@
           </p>
         </section>
 
-        <!-- 2: 輸入區 (iOS 風格表單卡片) -->
+        <!-- 2: 輸入區 -->
         <section
           class="bg-apple-card rounded-[28px] lg:rounded-3xl px-4 py-5 sm:px-5 sm:py-6 lg:px-8 lg:py-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] lg:shadow-[0_2px_20px_rgba(0,0,0,0.04)] transition-apple">
           <h2 class="text-[22px] lg:text-2xl font-semibold tracking-tight mb-5 lg:mb-6">
@@ -212,7 +212,7 @@
           </div>
         </section>
 
-        <!-- 4: 各卡簽賬 (保持桌面版邏輯) -->
+        <!-- 4: 各卡簽賬 -->
         <section
           class="bg-apple-card rounded-[28px] lg:rounded-3xl px-4 py-5 sm:px-5 sm:py-6 lg:px-10 lg:py-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] lg:shadow-[0_2px_20px_rgba(0,0,0,0.04)] transition-apple">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-5 lg:mb-6 gap-3">
@@ -231,6 +231,60 @@
           </p>
 
           <div class="space-y-5 lg:space-y-6">
+            
+            <!-- 渣打國泰萬事達卡 -->
+            <div class="bg-apple-bg rounded-[22px] p-4 lg:p-5">
+              <h3 class="text-[18px] font-semibold tracking-tight text-apple-text mb-3">
+                渣打國泰萬事達卡
+              </h3>
+              <div class="space-y-3.5 divide-y divide-apple-border/60">
+                <div class="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <div class="text-[15px] font-semibold text-apple-text">
+                      海外簽賬
+                    </div>
+                    <div class="text-[13px] text-apple-sub60 mt-0.5">
+                      HK$1 = 0.25 里 (HK$4/里)
+                    </div>
+                  </div>
+                  <div id="scCathayOverseas"
+                       class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                    —
+                  </div>
+                </div>
+
+                <div class="pt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <div class="text-[15px] font-semibold text-apple-text">
+                      食肆及酒店簽賬
+                    </div>
+                    <div class="text-[13px] text-apple-sub60 mt-0.5">
+                      HK$1 = 0.25 里 (HK$4/里)
+                    </div>
+                  </div>
+                  <div id="scCathayDiningHotel"
+                       class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                    —
+                  </div>
+                </div>
+
+                <div class="pt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <div class="text-[15px] font-semibold text-apple-text">
+                      其他港幣簽賬
+                    </div>
+                    <div class="text-[13px] text-apple-sub60 mt-0.5">
+                      HK$1 ≈ 0.17 里 (HK$6/里)
+                    </div>
+                  </div>
+                  <div id="scCathayLocal"
+                       class="text-[20px] font-bold tracking-tight text-apple-text text-right">
+                    —
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- HSBC Red -->
             <div class="bg-apple-bg rounded-[22px] p-4 lg:p-5">
               <h3 class="text-[18px] font-semibold tracking-tight text-apple-text mb-3">
@@ -467,6 +521,7 @@
     function calculateSpend(remaining,targetMiles){
       const badge=document.getElementById('statusBadge');
       const allIds=[
+        'scCathayOverseas', 'scCathayDiningHotel', 'scCathayLocal',
         'hsbcRedDesignated','hsbcRedTier1','hsbcRedTier2','hsbcRedLocal',
         'hsbcEasySpend','hsbcEasyLocal',
         'aeOnlineSpend','aeLocalSpend','aeTravelTier1','aeTravelTier2',
@@ -489,6 +544,11 @@
 
       badge.textContent='計算中';
       badge.className='self-start sm:self-auto text-[12px] font-semibold px-3 py-1.5 rounded-full bg-[#e8f2ff] text-apple-blue';
+
+      // 渣打國泰萬事達卡
+      setText('scCathayOverseas', formatMoney(remaining * 4)); // HK$4 = 1里
+      setText('scCathayDiningHotel', formatMoney(remaining * 4)); // HK$4 = 1里
+      setText('scCathayLocal', formatMoney(remaining * 6)); // HK$6 = 1里
 
       // HSBC Red 指定商戶 8%
       setText('hsbcRedDesignated',formatMoney(remaining/0.8));
